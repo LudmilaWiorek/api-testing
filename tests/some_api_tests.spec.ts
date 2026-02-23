@@ -35,4 +35,7 @@ test.describe("Some API tests", () => {
     expect(body).toHaveProperty("id");
     expect(body).toHaveProperty("createdAt");
   });
+  test.afterAll(async () => {
+    await apiContext.dispose();
+  });
 });
