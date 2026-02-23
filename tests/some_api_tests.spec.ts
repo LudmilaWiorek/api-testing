@@ -20,7 +20,7 @@ test.describe("Some API tests", () => {
     expect(body).toHaveProperty("data");
     expect(body.data).toBeInstanceOf(Array);
   });
-  test("should return 201 for POST", async ({ request }) => {
+  test("should return 201 for POST", async () => {
     const response = await apiContext.post("users", {
       data: {
         name: "John",
@@ -30,6 +30,9 @@ test.describe("Some API tests", () => {
     console.log("STATUS:", response.status());
     expect(response.status()).toBe(201);
     const body = await response.json();
-    console.log("BODY odpowiedzi:", body);
+    expect(body).toHaveProperty("name", "John");
+    expect(body).toHaveProperty("job", "developer");
+    expect(body).toHaveProperty("id");
+    expect(body).toHaveProperty("createdAt");
   });
 });
