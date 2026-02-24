@@ -38,7 +38,7 @@ test.describe("Some API tests", () => {
   test("should update resource using PUT - should return 200", async () => {
     const response = await apiContext.put("users/records/4", {
       data: {
-        name: "Jane Doe",
+        name: "Jane novak",
         email: "jane@example.com",
         role: "admin",
       },
