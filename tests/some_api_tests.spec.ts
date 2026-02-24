@@ -35,6 +35,18 @@ test.describe("Some API tests", () => {
     expect(body).toHaveProperty("id");
     expect(body).toHaveProperty("createdAt");
   });
+  test("should update resource using PUT - should return 200", async () => {
+    const response = await apiContext.put("users/records/4", {
+      data: {
+        name: "Jane Doe",
+        email: "jane@example.com",
+        role: "admin",
+      },
+    });
+    expect(response.status()).toBe(200);
+    const body = await response.json();
+    expect(body).toHaveProperty("updatedAt");
+  });
   test.afterAll(async () => {
     await apiContext.dispose();
   });
