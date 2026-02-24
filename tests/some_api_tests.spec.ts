@@ -46,6 +46,7 @@ test.describe("Some API tests", () => {
     expect(response.status()).toBe(200);
     const body = await response.json();
     expect(body).toHaveProperty("updatedAt");
+    //added comment for commit
   });
   test.afterAll(async () => {
     await apiContext.dispose();
