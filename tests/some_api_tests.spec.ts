@@ -9,6 +9,14 @@ test.describe("Some API tests", () => {
     expect(body).toHaveProperty("data");
     expect(body.data).toBeInstanceOf(Array);
   });
+  test("GET users with query params", async ({ request }) => {
+    const response = await request.get("users?page=2&limit=5");
+
+    expect(response.status()).toBe(200);
+    const body = await response.json();
+    expect(body.data.length).toBeGreaterThan(0);
+    //parameter limit is ignored by API
+  });
   test("should return 201 for POST", async ({ request }) => {
     const response = await request.post("users", {
       data: {
