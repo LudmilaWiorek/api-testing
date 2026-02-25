@@ -10,12 +10,15 @@ test.describe("Some API tests", () => {
     expect(body.data).toBeInstanceOf(Array);
   });
   test("GET users with query params", async ({ request }) => {
-    const response = await request.get("users?page=2&limit=5");
+    const response = await request.get("users", {
+      params: { page: 2, per_page: 5 },
+    });
 
     expect(response.status()).toBe(200);
     const body = await response.json();
+    expect(body).toHaveProperty("page", 2);
+    expect(body).toHaveProperty("per_page", 5);
     expect(body.data.length).toBeGreaterThan(0);
-    //parameter limit is ignored by API
   });
   test("should return 201 for POST", async ({ request }) => {
     const response = await request.post("users", {
