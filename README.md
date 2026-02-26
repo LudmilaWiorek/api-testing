@@ -77,10 +77,13 @@ npx playwright test tests/some_api_tests.spec.ts
 
 ## 🧪 Test Cases
 
-| Method | Endpoint | Expected Status | Description           |
-| ------ | -------- | --------------- | --------------------- |
-| GET    | /users   | 200             | Returns list of users |
-| POST   | /users   | 201             | Creates a new user    |
+| Method | Endpoint                            | Expected Status | Description                                                    |
+| ------ | ----------------------------------- | --------------- | -------------------------------------------------------------- |
+| GET    | `/users`                            | 200             | Returns list of users, validates `data` is an array            |
+| GET    | `/users?page=2&limit=5`             | 200             | Pagination params — note: `limit` is ignored by the API        |
+| POST   | `/users`                            | 201             | Creates a new user, validates `id` and `createdAt` in response |
+| PUT    | `/users/records/4`                  | 200             | Updates existing user, validates `updatedAt` in response       |
+| DELETE | `/my-app/collections/todos/records` | 204             | Deletes a record, validates empty response body                |
 
 ---
 
