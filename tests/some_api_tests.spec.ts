@@ -1,33 +1,29 @@
-import { APIRequestContext, expect, request, test } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 
 test.describe("Some API tests", () => {
-  let apiContext: APIRequestContext;
-
-  test.beforeAll(async () => {
-    apiContext = await request.newContext({
-      baseURL: "https://reqres.in/api/",
-      extraHTTPHeaders: {
-        "x-api-key": process.env.API_KEY ?? "",
-        "Content-Type": "application/json",
-      },
-    });
-  });
-  test("should return 200 for GET", async () => {
-    const response = await apiContext.get("users");
+  test("should return 200 for GET", async ({ request }) => {
+    const response = await request.get("users");
 
     expect(response.status()).toBe(200);
     const body = await response.json();
     expect(body).toHaveProperty("data");
     expect(body.data).toBeInstanceOf(Array);
   });
-  test("should return 201 for POST", async () => {
-    const response = await apiContext.post("users", {
+  test("GET users with query params", async ({ request }) => {
+    const response = await request.get("users?page=2&limit=5");
+
+    expect(response.status()).toBe(200);
+    const body = await response.json();
+    expect(body.data.length).toBeGreaterThan(0);
+    //parameter limit is ignored by API
+  });
+  test("should return 201 for POST", async ({ request }) => {
+    const response = await request.post("users", {
       data: {
         name: "John",
         job: "developer",
       },
     });
-    console.log("STATUS:", response.status());
     expect(response.status()).toBe(201);
     const body = await response.json();
     expect(body).toHaveProperty("name", "John");
@@ -35,8 +31,8 @@ test.describe("Some API tests", () => {
     expect(body).toHaveProperty("id");
     expect(body).toHaveProperty("createdAt");
   });
-  test("should update resource using PUT - should return 200", async () => {
-    const response = await apiContext.put("users/records/4", {
+  test("should return 200 for PUT", async ({ request }) => {
+    const response = await request.put("users/records/4", {
       data: {
         name: "Jane novak",
         email: "jane@example.com",
@@ -46,9 +42,11 @@ test.describe("Some API tests", () => {
     expect(response.status()).toBe(200);
     const body = await response.json();
     expect(body).toHaveProperty("updatedAt");
-    //added comment for commit
   });
-  test.afterAll(async () => {
-    await apiContext.dispose();
+  test("should return 204 for DELETE", async ({ request }) => {
+    const response = await request.delete("my-app/collections/todos/records");
+    expect(response.status()).toBe(204);
+    const body = await response.text();
+    expect(body).toBe("");
   });
 });
