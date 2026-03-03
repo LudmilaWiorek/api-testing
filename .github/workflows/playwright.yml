@@ -1,26 +1,55 @@
 name: Playwright Tests
-'on':
+on:
   push:
-    branches: [main, master]
+    branches: [ main, master ]
   pull_request:
-    branches: [main, master]
+    branches: [ main, master ]
+
 jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
+    
     - uses: actions/setup-node@v4
       with:
         node-version: lts/*
+    
+    # Cache dla node_modules
+    - name: Cache node modules
+      uses: actions/cache@v4
+      with:
+        path: ~/.npm
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
+
     - name: Install dependencies
       run: npm ci
+
+    # Cache dla przeglądarek Playwright  ← TO JEST NAJWAŻNIEJSZE
+    - name: Cache Playwright browsers
+      uses: actions/cache@v4
+      id: playwright-cache
+      with:
+        path: ~/.cache/ms-playwright
+        key: ${{ runner.os }}-playwright-${{ hashFiles('**/package-lock.json') }}
+
     - name: Install Playwright Browsers
+      if: steps.playwright-cache.outputs.cache-hit != 'true'
       run: npx playwright install --with-deps
+
+    # Jeśli cache trafiony — tylko doinstaluj systemowe zależności
+    - name: Install system deps only
+      if: steps.playwright-cache.outputs.cache-hit == 'true'
+      run: npx playwright install-deps
+
     - name: Run Playwright tests
       run: npx playwright test
       env:
         API_KEY: ${{ secrets.API_KEY }}
+
     - uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
       with:
