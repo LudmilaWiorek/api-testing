@@ -8,6 +8,9 @@ test.describe("Some API tests", () => {
     const body = await response.json();
     expect(body).toHaveProperty("data");
     expect(body.data).toBeInstanceOf(Array);
+    expect(body.data[0]).toHaveProperty("id");
+    expect(body.data[0]).toHaveProperty("email");
+    expect(body.data[0]).toHaveProperty("first_name");
   });
   test("GET users with query params", async ({ request }) => {
     const response = await request.get("users?page=2&limit=5");
@@ -16,6 +19,10 @@ test.describe("Some API tests", () => {
     const body = await response.json();
     expect(body.data.length).toBeGreaterThan(0);
     //parameter limit is ignored by API
+  });
+  test("GET non-existent user should return 404", async ({ request }) => {
+    const response = await request.get("users/999999999");
+    expect(response.status()).toBe(404);
   });
   test("should return 201 for POST", async ({ request }) => {
     const response = await request.post("users", {
